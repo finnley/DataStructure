@@ -8,24 +8,21 @@
 #include "stdio.h"
 
 /**
- * 状态码
+ * 函数结果状态码
  */
-// 真/是
-#define TRUE    1
-// 假/否
-#define FALSE   0
-// 通过/成功
-#define OK      1
-// 错误/失败
-#define ERROR   0
+#define TRUE    1       // 真/是
+#define FALSE   0       // 假/否
+#define OK      1       // 通过/成功
+#define ERROR   0       // 错误/失败
+#define	INFEASIBLE	-1	//不可行
 
 // 系统中已有此状态码定义，要防止冲突（这个我不明白作用是做什么的）
 #ifndef OVERFLOW
-// 堆栈上溢
-#define OVErFLOW    -2
+#define OVERFLOW    -2  // 堆栈上溢
 #endif
 
-// 定义新的类型 Status 用户标识方法返回状态等
+// typedef 作用：基于一个类型的别名
+// Status 是函数的类型，其值是函数结果状态码
 typedef int Status;
 
 // 定义新类型 布尔类型
