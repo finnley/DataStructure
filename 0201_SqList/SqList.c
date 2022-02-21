@@ -49,7 +49,7 @@ Status InitList(SqList *L) {
  */
 Status Destroy(SqList *L) {
     // 思考：
-    // 销毁顺序表需要哪些前提？1. 如果顺序表存在，才能销毁，如果顺序表不存在，可以销毁吗？
+    // 销毁顺序表需要哪些前提？1. 如果顺序表存在，才能销毁，如果顺序表不存在，可以销毁吗？一个不存在的顺序表怎么销毁？销个毛线啊，肯定要返回错误了
     // 具体怎么销毁？销毁需要完成哪些操作?
     if (L == NULL || (*L).elem == NULL) {
         return ERROR;
@@ -112,8 +112,129 @@ Status ListEmpty(SqList L) {
  * @param L
  * @return
  */
-Status ListLength(SqList L) {
+int ListLength(SqList L) {
     // 思考：
     // 前提是否需要考虑顺序表是否存在，如果顺序表不存在呢？可以返回 length?
     return L.length;
+}
+
+/**
+ * 取值
+ * 获取顺序表中第i个元素，将其存储到e中。
+ * 如果可以找到，返回OK，否则，返回ERROR。
+ *
+ * 教材中i的含义是元素位置，从1开始计数，但这不符合编码的通用约定。通常，i的含义应该指索引，即从0开始计数。
+ *
+ * @param L
+ * @param i
+ * @param e
+ * @return
+ */
+Status GetElem(SqList L, int i, ElemType *e) {
+    // 思考：有什么前提条件？
+    // 1. i 位置的取值范围是 1<=i<=Length(L)，如果不在此范围内，返回错误
+    // 2. 如果i满足条件怎么取值？L.elem[i-1] 1->0, 2->1, 3->2  => [i-1]
+    if (i < 1 || i > ListLength(L)) {
+        return ERROR;
+    }
+    *e = L.elem[i-1];
+
+    return OK;
+}
+
+/**
+ * 查找
+ *
+ * 返回顺序表中首个与e满足Compare关系的元素位序。
+ * 如果不存在这样的元素，则返回0。
+ *
+ * @param L
+ * @param e
+ * @param Compare
+ * @return
+ */
+int LocateElem(SqList L, ElemType e, Status(Compare)(ElemType, ElemType)) {
+    // 思考：
+    // 1. 顺序表不存在如何处理？返回错误
+
+    // 确保顺序表结构存在
+    if (L.elem == NULL) {
+        return ERROR;
+    }
+
+    int i = 1;
+    ElemType *p;
+
+    while(i <= L.length && !Compare(*p++, e)) {
+        ++i;
+    }
+
+    if (i <= L.length) {
+        return i;
+    } else {
+        return 0;
+    }
+}
+
+/**
+ * 前驱
+ *
+ * 获取元素 cur_e 的前驱
+ * 如果存在，将其存储到 pre_e 中，返回 OK
+ * 如果不存在，返回 ERROR
+ *
+ * @param L
+ * @param cur_e
+ * @param pre_e
+ * @return
+ */
+Status PriorElem(SqList L, ElemType cur_e, ElemType* pre_e) {
+    // 思考：
+    // 1.顺序表是空的
+    // 2.有哪些前提条件除了第一个元素外，每个元素都有一个直接前驱，所以可能会出现顺序表元素个数小于2个？比如只有一个，那就不存在前驱
+
+    // 确保顺序表结构存在，且最少包含两个元素
+    if (L.elem == NULL || L.length < 2) {
+        return ERROR;
+    }
+
+    // 这里的i初始化为第1个元素的【索引】
+    int i = 1;
+
+    // 从第1个元素开始，查找cur_e的位置
+    while (i <= L.length && L.elem[i] != cur_e) {
+        ++i;
+    }
+
+    // 如果cur_e是首个元素(没有前驱)，或者没找到元素cur_e，返回ERROR
+    if (i == 0 || i > L.length) {
+        return ERROR;
+    }
+
+    // 存储 cur_e 的前驱
+    *pre_e = L.elem[i - 1];
+
+    return OK;
+}
+
+Status ListInsert(SqList L, int i, ElemType *e) {
+
+}
+
+/**
+ * 遍历
+ *
+ * 用visit函数访问顺序表L
+ *
+ * @param L
+ * @param Visit
+ */
+void ListTraverse(SqList L, void(Visit)(ElemType)) {
+    int i;
+
+    for(i = 0; i < L.length; i++) {
+        Visit(L.elem[i]);
+    }
+
+    printf("\n");
 }

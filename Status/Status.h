@@ -32,4 +32,12 @@ typedef int Boolean;
 // 是否开启 debug 模式
 extern Boolean debug;
 
+/*
+ * 摁下回车键以继续运行。
+ *
+ * 通常在测试阶段时，需要让每一步测试都暂停下来，以观察其输出，此时可以让debug=TRUE。
+ * 在发布时，可以让debug=FALSE，此时各个测试块将不会暂停。
+ */
+void PressEnterToContinue(Boolean debug);
+
 #endif //STATUS_H
