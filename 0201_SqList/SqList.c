@@ -28,7 +28,7 @@ Status InitList(SqList *L) {
     // 注意：函数的返回值类型是 void *，void 并不是说没有返回值或者返回空指针，而是返回的指针类型未知。
     // 所以在使用 malloc() 时通常需要进行强制类型转换，将 void 指针转换成我们希望的类型
     // (*L).elem 这是什么用法，需要去看郝斌的C语言指针
-    (*L).elem = (ElemType *)malloc(LIST_INIT_SIZE * sizeof(ElemType));
+    (*L).elem = (ElemType *) malloc(LIST_INIT_SIZE * sizeof(ElemType));
     if ((*L).elem == NULL) {
         exit(OVERFLOW);
     }
@@ -137,7 +137,7 @@ Status GetElem(SqList L, int i, ElemType *e) {
     if (i < 1 || i > ListLength(L)) {
         return ERROR;
     }
-    *e = L.elem[i-1];
+    *e = L.elem[i - 1];
 
     return OK;
 }
@@ -156,6 +156,9 @@ Status GetElem(SqList L, int i, ElemType *e) {
 int LocateElem(SqList L, ElemType e, Status(Compare)(ElemType, ElemType)) {
     // 思考：
     // 1. 顺序表不存在如何处理？返回错误
+    // 2. 如何查找顺序表 L 中第一个满足 Compare 关系的元素 e 的 位置，如果不存在返回0？
+    // 遍历，在可遍历范围内（i < len(L)）并且当前元素不满足Compare关系时就继续下一个元素的判断
+    // 3. 因为要返回满足条件的位序，所以需要一个变量i来保存位序
 
     // 确保顺序表结构存在
     if (L.elem == NULL) {
@@ -163,9 +166,18 @@ int LocateElem(SqList L, ElemType e, Status(Compare)(ElemType, ElemType)) {
     }
 
     int i = 1;
+    // 4. 为什么要定义这个指针?
     ElemType *p;
+    // p 指向 L 的第一个元素，
+    p = L.elem;
 
-    while(i <= L.length && !Compare(*p++, e)) {
+    // *p++ 等价于 *(p++)
+
+    // p++整体表示L中的第一个元素地址，因为后自增整体表达式的值是p加1前的值，那么*(p++)表示第一个值，第一个值语e进行判断，最后指针p往后移动一位
+    while (i <= L.length && !Compare(*p++, e)) {
+        // 前自增整体表达式的值是i+1后的值，第一次循环后，i的值变成了2
+        // 这里需要避开前自增和后自增的差异，这里 ++i 和 i++ 是一样的，都是让i的值+1
+        // 最后直到 i 的值超出L的长度则退出循环
         ++i;
     }
 
@@ -188,21 +200,22 @@ int LocateElem(SqList L, ElemType e, Status(Compare)(ElemType, ElemType)) {
  * @param pre_e
  * @return
  */
-Status PriorElem(SqList L, ElemType cur_e, ElemType* pre_e) {
+Status PriorElem(SqList L, ElemType cur_e, ElemType *pre_e) {
     // 思考：
     // 1.顺序表是空的
-    // 2.有哪些前提条件除了第一个元素外，每个元素都有一个直接前驱，所以可能会出现顺序表元素个数小于2个？比如只有一个，那就不存在前驱
+    // 2.有哪些前提条件？
+    // 除了第一个元素外，每个元素都有一个直接前驱，所以可能会出现顺序表元素个数小于2个？比如只有一个，那就不存在前驱
 
-    // 确保顺序表结构存在，且最少包含两个元素
+    // 确保顺序表结构存在，且最少包含两个元素(L.length < 2 或者 L.length <= 1都可以)
     if (L.elem == NULL || L.length < 2) {
         return ERROR;
     }
 
     // 这里的i初始化为第1个元素的【索引】
-    int i = 1;
+    int i = 0;
 
     // 从第1个元素开始，查找cur_e的位置
-    while (i <= L.length && L.elem[i] != cur_e) {
+    while (i < L.length && L.elem[i] != cur_e) {
         ++i;
     }
 
@@ -217,8 +230,72 @@ Status PriorElem(SqList L, ElemType cur_e, ElemType* pre_e) {
     return OK;
 }
 
-Status ListInsert(SqList L, int i, ElemType *e) {
+/**
+ * 后继
+ *
+ * 获取元素cur_e的后继，
+ * 如果存在，将其存储到next_e中，返回OK，
+ * 如果不存在，则返回ERROR。
+ *
+ * @param L
+ * @param cur_e
+ * @param next_e
+ * @return
+ */
+Status NextElem(SqList L, ElemType cur_e, ElemType *next_e) {
+    // 确保顺序表结构存在，且最少包含两个元素
+    if (L.elem == NULL || L.length < 2) {
+        return ERROR;
+    }
 
+    // 这里的i初始化为第1个元素的【索引】
+    int i = 0;
+
+    while (i < L.length - 1 && L.elem[i] != cur_e) {
+        ++i;
+    }
+    if (i >= L.length - 1) {
+        return ERROR;
+    }
+
+    // 存储cur_e的后继
+    *next_e = L.elem[i + 1];
+
+    return OK;
+}
+
+/**
+ * 插入
+ *
+ * 向顺序表第i个位置上插入e，插入成功则返回OK，否则返回ERROR。
+ *
+ * 【备注】
+ * 教材中i的含义是元素位置，从1开始计数
+ *
+ * @param L
+ * @param i
+ * @param e
+ * @return
+ */
+Status ListInsert(SqList *L, int i, ElemType *e) {
+    // 思考：
+    // 1. 顺序表L不存在
+    // 2. 插入的位置越界
+    // 3. 顺序表L空间不够，已满，需要扩容
+
+    // 确保顺序表结构存在
+    if (L == NULL || (*L).elem == NULL) {
+        return ERROR;
+    }
+    // i值越界
+    if (i < 1 || i > (*L).length + 1) {
+        return ERROR;
+    }
+
+    // 若存储空间已满，则增加新空间
+    if ((*L).length >= (*L).listsize) {
+        // 基于现有空间扩容
+    }
 }
 
 /**
@@ -232,7 +309,7 @@ Status ListInsert(SqList L, int i, ElemType *e) {
 void ListTraverse(SqList L, void(Visit)(ElemType)) {
     int i;
 
-    for(i = 0; i < L.length; i++) {
+    for (i = 0; i < L.length; i++) {
         Visit(L.elem[i]);
     }
 

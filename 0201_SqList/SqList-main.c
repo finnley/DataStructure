@@ -9,6 +9,17 @@ void PrintElem(ElemType e) {
     printf("%d ", e);
 }
 
+/**
+ * 判断data>e是否成立
+ *
+ * @param data
+ * @param e
+ * @return
+ */
+Status CmpGreater(ElemType data, ElemType e) {
+    return data > e ? TRUE : FALSE;
+}
+
 int main(int argc, char** argv) {
     SqList L; // 声明一个顺序表，此时并没有初始化
 

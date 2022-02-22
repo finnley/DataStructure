@@ -176,7 +176,7 @@ Status NextElem(SqList L, ElemType cur_e, ElemType *next_e);
  * @param e
  * @return
  */
-Status ListInsert(SqList L, int i, ElemType *e);
+Status ListInsert(SqList *L, int i, ElemType *e);
 
 /**
  * 删除
@@ -189,7 +189,7 @@ Status ListInsert(SqList L, int i, ElemType *e);
  * @param e
  * @return
  */
-Status ListDelete(SqList L, int i, ElemType *e);
+Status ListDelete(SqList *L, int i, ElemType *e);
 
 /**
  * 遍历
