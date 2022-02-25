@@ -176,19 +176,19 @@ Status NextElem(SqList L, ElemType cur_e, ElemType *next_e);
  * @param e
  * @return
  */
-Status ListInsert(SqList *L, int i, ElemType *e);
+Status ListInsert(SqList *L, int i, ElemType e);
 
-/**
- * 删除
- *
- * 删除顺序表第i个位置上的元素，并将被删除元素存储到e中
- * 删除成功则返回OK，否则返回ERROR
- *
- * @param L
- * @param i
- * @param e
- * @return
- */
+ /**
+  * 删除
+  *
+  * 删除顺序表第i个位置上的元素，并将被删除元素存储到e中
+  * 删除成功则返回OK，否则返回ERROR
+  *
+  * @param L
+  * @param i
+  * @param e
+  * @return
+  */
 Status ListDelete(SqList *L, int i, ElemType *e);
 
 /**
