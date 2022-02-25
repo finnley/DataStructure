@@ -201,4 +201,47 @@ Status ListDelete(SqList *L, int i, ElemType *e);
  */
 void ListTraverse(SqList L, void(Visit)(ElemType));
 
+/**
+ * A=A∪B
+ *
+ * 计算La与Lb的并集并返回。
+ * 由于生成的并集会拼接在La上，所以La的入参为指针类型。
+ *
+ * @param La
+ * @param Lb
+ */
+void Union(SqList *La, SqList Lb);
+
+/**
+ * 判等
+ *
+ * 判断两个元素是否相等
+ * 如果相等，则返回TRUE，否则返回FALSE
+ *
+ * @param e1
+ * @param e2
+ * @return
+ */
+Status equal(ElemType e1, ElemType e2);
+
+/*
+ * ████████ 算法2.2 ████████
+ *
+ * 非递减链表归并：C=A+B
+ *
+ * 归并顺序表La和Lb，生成新的顺序表Lc。
+ * 其中，La、Lb、Lc均为非递减序列。
+ */
+void MergeSqList_1(SqList La, SqList Lb, SqList* Lc);
+
+/*
+ * ████████ 算法2.7 ████████
+ *
+ * 非递减链表归并：C=A+B
+ *
+ * 归并顺序表La和Lb，生成新的顺序表Lc。
+ * 其中，La、Lb、Lc均为非递减序列。
+ */
+void MergeSqList_2(SqList La, SqList Lb, SqList* Lc);
+
 #endif //SQLIST_H
