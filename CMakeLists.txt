@@ -14,7 +14,6 @@ add_executable(
 )
 add_executable(
         LinkList
-        0202_LinkList/LinkList-main.c
         0202_LinkList/LinkList.c
         0202_LinkList/LinkList.h
         Status/Status.c

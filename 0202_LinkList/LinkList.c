@@ -40,6 +40,8 @@ Status InitList(LinkList *L) {
     // 头节点是什么类型的呀？LNode类型的，所以获取字节就是 sizeof(LNode)
     // malloc返回的指针类型未知，所以需要强制类型转换，指向头节点的指针，类型是LinkList,指针类型
     // 用什么来接收返回值？L还是 (*L)?
+
+    // 产生头结点,并使L指向此头结点
     (*L) = (LinkList) malloc(sizeof(LNode));
 //     上面的语句可以写成下面写法吗？
 //    L = (LinkList *) malloc(sizeof(LNode));
