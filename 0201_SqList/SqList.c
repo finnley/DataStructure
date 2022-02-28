@@ -432,15 +432,28 @@ Status equal(ElemType e1, ElemType e2) {
     return e1 == e2 ? TRUE : FALSE;
 }
 
+
 // 归并非降序顺序表
 /**
- * 已知线性表LA和LB中的数据元素按值非递减有序排列，先要求将 LA和LB对并为一个心的线性表LC
-* LA = (3, 5, 8, 11)
-* LB = (2, 6, 8, 9, 11, 15, 20)
-* 则LC = (2, 3, 5, 6, 8, 9, 11, 11, 15, 20)
-*/
-
+ * 非递减链表归并：C=A+B
+ * 归并顺序表La和Lb，生成新的顺序表Lc。
+ * 其中，La、Lb、Lc均为非递减序列。
+ *
+ * @param La
+ * @param Lb
+ * @param Lc
+ */
 void MergeSqList_1(SqList La, SqList Lb, SqList *Lc) {
+    /**
+     * 思路
+     * 已知线性表LA和LB中的数据元素按值非递减有序排列，先要求将 LA和LB对并为一个心的线性表LC
+     * LA = (3, 5, 8, 11)
+     * LB = (2, 6, 8, 9, 11, 15, 20)
+     * 则LC = (2, 3, 5, 6, 8, 9, 11, 11, 15, 20)
+     *
+     * 先设LC是个空表，所以需要先初始化
+     * 然后将 LA 或 LB 中的数据逐个插入到LC中即可
+     */
     // 初始化Lc
     InitList(Lc);
 
@@ -453,25 +466,89 @@ void MergeSqList_1(SqList La, SqList Lb, SqList *Lc) {
     i = j = 1;
     k = 0;
 
-    ElemType a, b;
+    // 比较的元素
+    ElemType ai, bj;
 
+    // 如果La及Lb均未遍历完
+    // 同时使用 i 遍历La，j 遍历 Lb
     while (i <= La_len && j <= Lb_len) {
-        GetElem(La, i, &a);
-        GetElem(Lb, j, &b);
-        if (a <= b) {
-            ListInsert(&Lc, ++k, a);
-            ++i;
+        // 分别获取La和Lb当前遍历的元素，分别放到 ai，bj 中
+        GetElem(La, i, &ai);
+        GetElem(Lb, j, &bj);
+
+        // 比较遍历到的元素，先将比较小的元素加入顺序表Lc
+        // 为什么是 ++k 前自增，整体表达式是k+1后的值，最开始也就是插入1的位置
+        if (ai <= bj) {
+            ListInsert(Lc, ++k, ai);
+            i++;
         } else {
-            ListInsert(&Lc, ++k, b);
-            ++j;
+            ListInsert(Lc, ++k, bj);
+            j++;
         }
     }
+
+    // 如果Lb已遍历完，但La还未遍历完，将La中剩余元素加入Lc
+    // i++ 后自增整体表达式是i+1前的值
+    // ++k 前自增整体表达式是j+1后的值
     while (i <= La_len) {
-        GetElem(La, i++, &a);
-        ListInsert(&Lc, ++k, a);
+        GetElem(La, i++, &ai);
+        ListInsert(Lc, ++k, ai);
     }
+
+    // 如果La已遍历完，但Lb还未遍历完，将Lb中剩余元素加入Lc
     while (j <= Lb_len) {
-        GetElem(Lb, j++, &b);
-        ListInsert(&Lc, ++k, b);
+        GetElem(Lb, j++, &bj);
+        ListInsert(Lc, ++k, bj);
+    }
+}
+
+/**
+ * 非递减链表归并：C=A+B
+ * 归并顺序表La和Lb，生成新的顺序表Lc。
+ * 其中，La、Lb、Lc均为非递减序列。
+ * 使用指针的方式归并
+ *
+ * @param La
+ * @param Lb
+ * @param Lc
+ */
+void MergeSqList_2(SqList La, SqList Lb, SqList *Lc) {
+    ElemType *pa, *pb, *pc;
+    ElemType *pa_last, *pb_last;
+
+    // pa 指向La第一个元素
+    pa = La.elem;
+    // pb 指向Lb第一个元素
+    pb = Lb.elem;
+
+    // 此时还没有Lc，这里不适用 InitList 初始化Lc
+    (*Lc).listsize = (*Lc).length = La.length + Lb.length;
+    pc = (*Lc).elem = (ElemType *) malloc((*Lc).listsize * sizeof(ElemType));
+    if (pc == NULL) {
+        exit(OVERFLOW);
+    }
+
+    // pa_last 指向La最后一个元素
+    pa_last = La.elem + La.length - 1;
+    // pb_last 指向Lb最后一个元素
+    pb_last = Lb.elem + Lb.length - 1;
+
+    // 如果La及Lb均未遍历完
+    while (pa <= pa_last && pb <= pb_last) {
+        if (*pa <= *pb) {
+            *pc++ = *pa++;
+        } else {
+            *pc++ = *pb++;
+        }
+    }
+
+    // 如果Lb已遍历完，但La还未遍历完，将La中剩余元素加入Lc
+    while(pa <= pa_last) {
+        *pc++ = *pa++;
+    }
+
+    // 如果La已遍历完，但Lb还未遍历完，将Lb中剩余元素加入Lc
+    while(pb <= pb_last) {
+        *pc++ = *pb++;
     }
 }

@@ -12,3 +12,11 @@ add_executable(
         Status/Status.c
         Status/Status.h
 )
+add_executable(
+        LinkList
+        0202_LinkList/LinkList-main.c
+        0202_LinkList/LinkList.c
+        0202_LinkList/LinkList.h
+        Status/Status.c
+        Status/Status.h
+)
