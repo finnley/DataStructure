@@ -42,12 +42,29 @@
  * @return
  */
 Status InitList(LinkList *L) {
+    // int i = 10;          ==> i, addr: 1000H, val: 10,    i是int类型, 只能存放整形变量
+    // int *p = &i;         ==> p, addr: 2000H, val: 1000H, p是int *类型变量, p只能存放i的地址
+    // int **q = &p;        ==> q, addr: 3000H, val: 2000H, q是(int *) *类型变量，q只能存放p的地址
+    // int ***r = &q;       ==> r, addr: 4000H, val: 3000H, r是((int *) *) *类型变量, r只能存q的地址
+    // 反过来推如何用r来表示i
+    // r是q的地址，则*r 就是 q, *r表示以r的内容为地址的变量，r的内容是3000H，以3000H为地址的变量就是q
+    // **r 等价于 *q, *q就是p
+    // ***r 等价于*p, *p就是i
+    // 所以***r等价于i
+
+    // LinkList 本身就是一个 TYPE * 类型的变量，类似 int * p;
+    // LinkList *L可以看作是定义了L，L是个(TYPE *) * 类型的变量，也就是L以 TYPE *的变量地址为地址的变量
+    // 类似于int * *q = &p; 则 *q 就是 p, 即*L 等价于 TYPE * 类型的变量，也就是 LinkList
+
     // 头节点是什么类型的呀？LNode类型的，所以获取字节就是 sizeof(LNode)
     // malloc返回的指针类型未知，所以需要强制类型转换，指向头节点的指针，类型是LinkList,指针类型
     // 用什么来接收返回值？L还是 (*L)?
 
-    // 产生头结点,并使L指向此头结点
-    (*L) = (LinkList) malloc(sizeof(LNode));
+    LinkList lList = (LinkList) malloc(sizeof(LNode));
+
+    // 产生头结点，并使L指向此头结点
+    // 或者说是 分配了一个不存放有效数据的头结点
+//    (*L) = (LinkList) malloc(sizeof(LNode));
 //     上面的语句可以写成下面写法吗？
 //    L = (LinkList *) malloc(sizeof(LNode));
     if (*L == NULL) {

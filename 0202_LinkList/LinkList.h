@@ -20,13 +20,13 @@ typedef int ElemType;
 typedef struct LNode {
     ElemType data;          // 数据结点
     struct LNode *next;     // 指向下一个节点的指针
-} LNode;
+} LNode, *LinkList; // LNode等价于struct LNode, LinkList等价于struct LNode *
 
 // 指向单链表结点的指针
 // 指向LNode这个结构体类型的的指针
 // 可以看作某个结点的地址
 // 用来表示头节点的地址，知道了地址也就知道了头节点
-typedef LNode *LinkList;
+//typedef LNode *LinkList; // 我放到上面的结构体里面了
 
 /**
  * 初始化
