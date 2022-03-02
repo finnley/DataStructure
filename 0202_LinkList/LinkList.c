@@ -85,26 +85,136 @@ Status InitList(LinkList *L) {
  * 销毁(结构)
  *
  * 释放链表所占内存，头结点也会被清理。
+ * 是先销毁了链表的头，然后接着一个一个的把后面的销毁了，这样这个链表就不能再使用了，即把包括头的所有节点全部释放。
+ * 销毁就是链表没了，整个链表(包括头)的空间都被释放了，不能进行任何操作了
  *
  * @param L
  * @return
  */
 Status DestroyList(LinkList *L) {
+    // 思考：
+    // 怎么才能销毁一个链表? 需要传入哪些参数
+    // 传入一个保存头结点的指针，也就是头指针
+    // 如何通过头指针销毁链表？
+    // 可以将头结点的指向设置为NULL吗？设置为NULL，会存在什么风险
+    // 不能，那原本头结点之后的所有结点都没有释放，其实并没有将那块内存空间的操作权限还给操作系统，可能会导致内存溢出
+    // 还需要遍历整个链表进行释放，定义个指向结点的指针，释放调哪个结点，这个指针就指向这个结点的下一个结点
+
+
     LinkList p;
 
-    // 确保链表结构存在
+    // 1.确保链表结构存在
+    // 头指针都不存在，还是个链表吗？都不是个链表还释放放个屁
+    // L 是头指针变量，是头结点的地址；*L是头结点
+    // 所以这边判断L头结点指针是否为空，头结点是否为空
     if (L == NULL || *L == NULL) {
         return ERROR;
     }
 
+    // 2. 遍历链表，释放结点
+    // 需要定义一个指针，指向头结点
+    // 是先释放，然后再将指针指向下一个；还是先指向下一个，然后再释放
+    // p 就是 LinkList 头结点，保存了是首结点指针
     p = *L;
     while (p != NULL) {
+        // 第一个循环开始p先后移一位，指向首结点
         p = (*L)->next;
+        // 接着释放头结点
         free(*L);
+        // L也后移一位，此时首结点可以理解成是存放了有效数据的头节点
         (*L) = p;
     }
 
+    // 3.最后一个结点设置为NULL
     *L = NULL;
+
+    return OK;
+}
+
+/**
+ * 置空(内容)
+ *
+ * 这里需要释放链表中非头结点处的空间。
+ *
+ * 是先保留了链表的头，然后把头后面的所有的都销毁，最后把头里指向下一个的指针设为空，这样就相当与清空了，
+ * 但这个链表还在，还可以继续使用；即保留了头，后面的全部释放。
+ * 清空是链表的头还在，可以继续插入节点；
+ *
+ * @param L
+ * @return
+ */
+Status ClearList(LinkList L) {
+    LinkList pre, p;
+
+    if (L == NULL) {
+        return ERROR;
+    }
+
+    p = L->next;
+
+    // 释放链表上所有结点所占内存
+    while (p != NULL) {
+        pre = p;
+        p = p->next;
+        free(pre);
+    }
+
+    L->next = NULL;
+
+    return OK;
+}
+
+/**
+ * 判空
+ *
+ * 判断链表中是否包含有效数据。
+ *
+ * @param L
+ * @return
+ */
+Status ListEmpty(LinkList L) {
+    if (L != NULL && L->next == NULL) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
+int ListLength(LinkList L) {
+    // 确保链表存在且不为空
+    if (L == NULL || L->next == NULL) {
+        return 0;
+    }
+
+    int i = 0;
+    LinkList p;
+
+    p = L->next;
+    // 遍历所有结点
+    while (p != NULL) {
+        i++;
+        p = p->next;
+    }
+
+    return i;
+}
+
+Status GetElem(LinkList L, int i, ElemType *e) {
+    if (L == NULL || L->next == NULL) {
+        return NULL;
+    }
+    LinkList p;
+    p = L->next;
+
+    int j = 0;
+    while (p != NULL) {
+        if (j != i) {
+            p = p->next;
+        } else {
+            *e = p->data;
+        }
+        j++;
+    }
 
     return OK;
 }
