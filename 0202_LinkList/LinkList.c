@@ -52,26 +52,30 @@ Status InitList(LinkList *L) {
     // ***r 等价于*p, *p就是i
     // 所以***r等价于i
 
-    // LinkList 本身就是一个 TYPE * 类型的变量，类似 int * p;
-    // LinkList *L可以看作是定义了L，L是个(TYPE *) * 类型的变量，也就是L以 TYPE *的变量地址为地址的变量
-    // 类似于int * *q = &p; 则 *q 就是 p, 即*L 等价于 TYPE * 类型的变量，也就是 LinkList
+    // 数据结点类型是 LNode，定以了一个 LinkList 变量用来保存LNode类型结点的地址，LinkList类型是 TYPE *类型，LinkList可以理解为头结点
+    // LinkList 本身是一个 TYPE * 类型的变量，类似 int *p;
+    // LinkList *L可以看作是定义了L，L是个(TYPE *) * 类型的变量，也就是L以 TYPE *的变量地址为地址的变量，L保存的是头结点的地址，*L就是头结点LinkList
+    // 类似于int * *q = &p; 则 *q 就是 p, 即*L 等价于 TYPE * 类型的变量，是个地址，是个TYPE类型变量的地址，这个TYPE就是LNode，也就是LNode类型的地址
 
     // 头节点是什么类型的呀？LNode类型的，所以获取字节就是 sizeof(LNode)
     // malloc返回的指针类型未知，所以需要强制类型转换，指向头节点的指针，类型是LinkList,指针类型
     // 用什么来接收返回值？L还是 (*L)?
 
-    LinkList lList = (LinkList) malloc(sizeof(LNode));
+    // 1. 产生头结点，并使L指向此头结点，或者说是 分配了一个不存放有效数据的头结点
+    // *L就是LinkList，LinkList是个指针，所以这个的*L不是内容，而是指针，是个地址，头结点的地址
+    (*L) = (LinkList) malloc(sizeof(LNode));
+    // 上面的语句可以写成下面写法吗？
+    // L = (LinkList *) malloc(sizeof(LNode));
 
-    // 产生头结点，并使L指向此头结点
-    // 或者说是 分配了一个不存放有效数据的头结点
-//    (*L) = (LinkList) malloc(sizeof(LNode));
-//     上面的语句可以写成下面写法吗？
-//    L = (LinkList *) malloc(sizeof(LNode));
+    // 2. 如果头结点分配失败，退出程序
     if (*L == NULL) {
         exit(OVERFLOW);
     }
-    // 为什么不需要指定data为NULL
-    //(*L)->data = NULL;
+
+    // 3. 设置头节点指向为空
+    // 初始化链表长度为0，头节点指向必为空，我没有下一个结点，就单独一个头结点
+    // 为什么不需要指定data为NULL，比如(*L)->data = NULL;
+    // 因为头节点不存放有效数据，可以不用设置数据域
     (*L)->next = NULL;
 
     return OK;
