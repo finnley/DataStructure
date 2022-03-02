@@ -224,7 +224,9 @@ Status GetElem(LinkList L, int i, ElemType *e) {
 }
 
 int LocateElem(LinkList L, ElemType e, Status(Compare)(ElemType, ElemType)) {
-
+    if (L == NULL || L->next == NULL) {
+        return 0;
+    }
 }
 
 Status ListInsert(LinkList L, int i, ElemType e) {
