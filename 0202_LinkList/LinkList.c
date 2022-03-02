@@ -224,9 +224,32 @@ Status GetElem(LinkList L, int i, ElemType *e) {
 }
 
 int LocateElem(LinkList L, ElemType e, Status(Compare)(ElemType, ElemType)) {
+    // 确保链表存在且不为空表
     if (L == NULL || L->next == NULL) {
         return 0;
     }
+
+    LinkList p;
+
+    // i 的初值为第1个元素的位序
+    int i = 1;
+    // p 的初值为第1个元素的指针（地址）
+    p = L->next;
+
+    while (p != NULL && !Compare(p->data, e)) {
+        i++;
+        p = p->next;
+    }
+
+    if (p != NULL) {
+        return i;
+    } else {
+        return 0;
+    }
+}
+
+Status PriorElem(LinkList L, ElemType cur_e, ElemType* pre_e) {
+
 }
 
 Status ListInsert(LinkList L, int i, ElemType e) {
