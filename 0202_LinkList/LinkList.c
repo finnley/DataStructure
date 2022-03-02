@@ -200,23 +200,35 @@ int ListLength(LinkList L) {
 }
 
 Status GetElem(LinkList L, int i, ElemType *e) {
+    // 确保链表存在且不为空
     if (L == NULL || L->next == NULL) {
-        return NULL;
+        return ERROR;
     }
-    LinkList p;
-    p = L->next;
 
-    int j = 0;
-    while (p != NULL) {
-        if (j != i) {
-            p = p->next;
-        } else {
-            *e = p->data;
-        }
-        j++;
+    LinkList p;
+    int j = 1;
+
+    p = L->next;
+    while (p && j < i) {
+        p = p->next;
+        ++j;
     }
+
+    // 第i个元素不存在
+    if (!p || j > i) {
+        return ERROR;
+    }
+    *e = p->data;
 
     return OK;
+}
+
+int LocateElem(LinkList L, ElemType e, Status(Compare)(ElemType, ElemType)) {
+
+}
+
+Status ListInsert(LinkList L, int i, ElemType e) {
+
 }
 
 #include "LinkList.h"
